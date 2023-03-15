@@ -280,6 +280,7 @@ public class Game : IDisposable
         raiseStateChange();
         logger.LogInformation("player: {playerName} moved rover correctly", player.Name);
 
+
         return new MoveResult(
             player.PerseveranceLocation,
             player.BatteryLevel,

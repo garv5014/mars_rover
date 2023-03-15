@@ -10,6 +10,7 @@ using Serilog.Exceptions;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,6 +56,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddSingleton<MultiGameHoster>();
+builder.Services.AddSingleton<Counters>();
 builder.Services.AddSingleton<IMapProvider, FileSystemMapProvider>();
 
 builder.Services.AddHostedService<CleanupGameService>();
@@ -85,6 +87,7 @@ if (!app.Environment.IsDevelopment())
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseHttpMetrics();
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>
@@ -95,9 +98,11 @@ app.UseSwaggerUI(c =>
 app.MapBlazorHub()
    .DisableRateLimiting();
 
+app.UseMiddleware<MetricMiddleware>();
 app.UseRateLimiter();
+app.MapMetrics();
 
-app.MapControllers();
+app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
 app.MapFallbackToPage("/_Host")
    .DisableRateLimiting();

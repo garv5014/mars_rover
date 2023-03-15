@@ -6,8 +6,12 @@ services:
     build:
       context: .
       dockerfile: Mars.Web/Dockerfile
-    environment:
+    environment: 
       - SeqServer=http://seq
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports: 
+      - 8080:80
+      - 8081:443
     networks:
       - jaegernet
 
@@ -18,6 +22,8 @@ services:
       - "8888:80"
     volumes:
       - /datadrive:/data
+    networks:
+      - jaegernet
     environment:
       - ACCEPT_EULA=Y
 
@@ -34,6 +40,28 @@ services:
       - jaegernet
     depends_on:
       - mars.web
+
+  prometheus:
+    image: ubuntu/prometheus
+    container_name: dev_prometheus
+    ports:
+      - "30090:9090"
+    environment:
+      - TZ=UTC
+    networks:
+      - jaegernet
+    volumes:
+      - ./prom/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana
+    container_name: dev_grafana
+    ports:
+      - "30091:3000"
+    networks:
+      - jaegernet
+    volumes:
+      - ./grafana-data/data:/var/lib/grafana
 
 networks:
   jaegernet:
