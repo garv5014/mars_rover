@@ -8,10 +8,6 @@ services:
       dockerfile: Mars.Web/Dockerfile
     environment: 
       - SeqServer=http://seq
-      - ASPNETCORE_ENVIRONMENT=Development
-    ports: 
-      - 8080:80
-      - 8081:443
     networks:
       - jaegernet
 
