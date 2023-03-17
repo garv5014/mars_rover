@@ -213,6 +213,7 @@ public class Game : IDisposable
         var player = players[token];
         var unmodifiedPlayer = player;
         string? message;
+        var damage = 1;
 
         if (direction == Direction.Right || direction == Direction.Left)
         {
@@ -243,6 +244,7 @@ public class Game : IDisposable
             else
             {
                 var newBatteryLevel = player.BatteryLevel - Board[desiredLocation].Difficulty.Value;
+                damage = Board[desiredLocation].Difficulty.Value;
                 if (newBatteryLevel >= 0)
                 {
                     player = player with
@@ -282,6 +284,7 @@ public class Game : IDisposable
         logger.LogInformation("player: {playerName} moved rover correctly", player.Name);
 
         player.SuccessfulRoverMoveCounter.WithLabels(token.Value).Inc();
+        player.RoverDamageCounter.WithLabels(token.Value).Inc(damage);
         return new MoveResult(
             player.PerseveranceLocation,
             player.BatteryLevel,
