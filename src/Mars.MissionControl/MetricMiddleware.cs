@@ -30,5 +30,6 @@ public class MetricMiddleware
         {
             counter.IncrementExceededRateLimitTotal();
         }
+        await _request(httpContext);
     }
 }

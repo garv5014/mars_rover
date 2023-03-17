@@ -179,12 +179,13 @@ public class Game : IDisposable
                 System.Console.WriteLine("Recursing MoveIngenuity to avoid UnableToUpdatePlayerException");
                 return MoveIngenuity(token, destination, updatePlayerTryAgainCount + 1);
             }
+            player.SquaresMovedByHeliCopterCounter.WithLabels(token.Value).Inc(Math.Max(deltaX, deltaY));
             message = GameMessages.IngenuityMoveOK;
         }
 
         raiseStateChange();
         logger.LogInformation("player: {name} moved helicopter correctly and moved to location: {loc}", player.Name, player.IngenuityLocation);
-
+        player.SuccessfulHelicopterMoveCounter.WithLabels(token.Value).Inc();
         return new IngenuityMoveResult(
             player.IngenuityLocation,
             player.IngenuityBatteryLevel,
@@ -280,7 +281,7 @@ public class Game : IDisposable
         raiseStateChange();
         logger.LogInformation("player: {playerName} moved rover correctly", player.Name);
 
-
+        player.SuccessfulRoverMoveCounter.WithLabels(token.Value).Inc();
         return new MoveResult(
             player.PerseveranceLocation,
             player.BatteryLevel,
